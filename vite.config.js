@@ -1,3 +1,4 @@
+import path from 'path';
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 // import Components from 'unplugin-vue-components/vite';  // 自动引入组件, 省略import NaiveUiResolver
@@ -14,5 +15,21 @@ export default defineConfig({
   ],
   server: {
     port: 26777,
-  }
+  },
+  resolve: {
+    alias: [
+      {
+        find: "@",
+        replacement: path.resolve(__dirname, "src"),
+      },
+      {
+        find: "demo",
+        replacement: path.resolve(__dirname, "demo"),
+      },
+      {
+        find: "naive-tiptap",
+        replacement: path.resolve(__dirname, "src/index.js"),
+      },
+    ],
+  },
 });
