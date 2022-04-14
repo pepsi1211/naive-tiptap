@@ -1,11 +1,17 @@
 import path from "path";
+import vue from "@vitejs/plugin-vue";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import babel from "@rollup/plugin-babel";
+import alias from "@rollup/plugin-alias";
+import replace from "@rollup/plugin-replace";
 
 const libDir = path.resolve(__dirname, "lib");
 const srcDir = path.resolve(__dirname, "src");
 
 function getConfig({ file, format }) {
   return {
-    input: path.resolve(srcDir, "index.ts"),
+    input: path.resolve(srcDir, "index.js"),
     output: {
       file,
       name: "NaiveTiptap",
@@ -48,6 +54,7 @@ function getConfig({ file, format }) {
     ],
     plugins: [
       replace({
+        preventAssignment: true,
         "process.env.NODE_ENV": JSON.stringify("production"),
       }),
       alias({
@@ -55,30 +62,31 @@ function getConfig({ file, format }) {
           "@": srcDir,
         },
       }),
-      node({
-        extensions: [".ts", ".js", ".vue"],
+      resolve({
+        extensions: [".js", ".vue"],
       }),
       // typescript({
       //   clear: true,
       //   typescript: require("typescript"),
       // }),
-      // cjs({
-      //   extensions: [".ts", ".js"],
-      // }),
+      commonjs({
+        extensions: [".js"],
+      }),
       // postcss({
       //   extract: path.resolve(libDir, "index.css"),
       //   minimize: true,
       //   plugins: [postcssPresetEnv()],
       // }),
-      vue({
-        defaultLang: {
-          style: "scss",
-        },
-        css: false,
-      }),
+      // vue({
+      //   defaultLang: {
+      //     style: "scss",
+      //   },
+      //   css: false,
+      // }),
+      vue(),
       babel({
         exclude: "node_modules/**",
-        runtimeHelpers: true,
+        babelHelpers: 'runtime',
         extensions: [".js", ".ts"],
         presets: [
           [
@@ -94,24 +102,22 @@ function getConfig({ file, format }) {
           [
             "component",
             {
-              libraryName: "element-ui",
-              style: false,
+              libraryName: "naive-ui",
             },
           ],
         ],
       }),
-      terser(),
     ],
   };
 }
 
 export default () => [
   getConfig({
-    file: path.resolve(libDir, "element-tiptap.min.js"),
+    file: path.resolve(libDir, "naive-tiptap.min.js"),
     format: "umd",
   }),
   getConfig({
-    file: path.resolve(libDir, "element-tiptap.esm.js"),
+    file: path.resolve(libDir, "naive-tiptap.esm.js"),
     format: "es",
   }),
 ];
